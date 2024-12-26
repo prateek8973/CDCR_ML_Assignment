@@ -1,0 +1,137 @@
+.App {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  padding: 20px;
+}
+
+.App-header {
+  background-color: #333;
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.App-header h1 {
+  margin: 0;
+}
+
+.upload-section, .result-section, .info-section {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.upload-section h2, .result-section h2, .info-section h2 {
+  margin-top: 0;
+}
+
+form {
+  margin: 20px 0;
+}
+
+input[type="file"] {
+  margin: 10px 0;
+}
+
+button {
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.result {
+  margin-top: 20px;
+}
+
+.result ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.result li {
+  background-color: #f9f9f9;
+  margin: 5px 0;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.clusters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.cluster-card {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  width: 300px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.cluster-card h3 {
+  margin-top: 0;
+}
+
+.cluster-card ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.cluster-card li {
+  background-color: #f9f9f9;
+  margin: 5px 0;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.info {
+  text-align: left;
+  margin-top: 40px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.info h2 {
+  color: #333;
+}
+
+.info h3 {
+  color: #555;
+}
+
+.info p, .info ul {
+  color: #666;
+}
+
+.info ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+.info ul li {
+  margin-bottom: 10px;
+}
