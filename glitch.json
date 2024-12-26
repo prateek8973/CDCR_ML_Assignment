@@ -1,4 +1,4 @@
 {
-    "install": "pip install -r requirements.txt",
+    "install": "pip install -r requirements.txt && npm install",
     "start": "./start.sh"
   }
