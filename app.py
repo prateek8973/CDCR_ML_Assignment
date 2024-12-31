@@ -44,7 +44,7 @@ def process_file(file):
     file.save(file_path)
     text = extract_text_from_pdf(file_path)
     mentions = detect_mentions(text)
-    return mentions
+    return mentions, file.filename
 
 @app.route('/upload', methods=['POST'])
 def upload_files():
@@ -52,20 +52,41 @@ def upload_files():
         return jsonify({'error': 'No files part in the request'}), 400
 
     files = request.files.getlist('files')
-    file_paths = []
     all_mentions = []
+    file_mentions = {}
 
     with ThreadPoolExecutor() as executor:
         results = executor.map(process_file, files)
-        for mentions in results:
+        for mentions, filename in results:
             all_mentions.extend(mentions)
+            file_mentions[filename] = mentions
 
     clusters = link_mentions(all_mentions)
 
-    print(f'File paths: {file_paths}')
-    print(f'Clusters: {clusters}')
+    return jsonify({'file_mentions': file_mentions, 'clusters': clusters})
 
-    return jsonify({'file_paths': [file.filename for file in files], 'clusters': clusters})
+@app.route('/filter', methods=['POST'])
+def filter_results():
+    data = request.json
+    filter_option = data.get('filterOption')
+    filter_value = data.get('filterValue').lower()
+    clusters = data.get('clusters')
+    file_mentions = data.get('file_mentions')
+
+    filtered_clusters = {}
+    filtered_files = {}
+
+    for cluster_id, mentions in clusters.items():
+        filtered_mentions = [mention for mention in mentions if filter_value in mention.lower()]
+        if filtered_mentions:
+            filtered_clusters[cluster_id] = filtered_mentions
+
+    for filename, mentions in file_mentions.items():
+        filtered_mentions = [mention for mention in mentions if filter_value in mention.lower()]
+        if filtered_mentions:
+            filtered_files[filename] = filtered_mentions
+
+    return jsonify({'filtered_clusters': filtered_clusters, 'filtered_files': filtered_files})
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')

@@ -5,6 +5,10 @@ import './App.css';
 function App() {
     const [files, setFiles] = useState([]);
     const [result, setResult] = useState(null);
+    const [filterOption, setFilterOption] = useState('author');
+    const [filterValue, setFilterValue] = useState('');
+    const [filteredResult, setFilteredResult] = useState(null);
+    const [filteredFiles, setFilteredFiles] = useState(null);
 
     const handleFileChange = (event) => {
         setFiles(event.target.files);
@@ -30,6 +34,33 @@ function App() {
         }
     };
 
+    const handleFilterOptionChange = (event) => {
+        setFilterOption(event.target.value);
+    };
+
+    const handleFilterValueChange = (event) => {
+        setFilterValue(event.target.value);
+    };
+
+    const handleFilterSubmit = async (event) => {
+        event.preventDefault();
+        if (!result) return;
+
+        try {
+            const response = await axios.post('http://localhost:5000/filter', {
+                filterOption,
+                filterValue,
+                clusters: result.clusters,
+                file_mentions: result.file_mentions
+            });
+            console.log('Filtered Response:', response.data);
+            setFilteredResult(response.data.filtered_clusters);
+            setFilteredFiles(response.data.filtered_files);
+        } catch (error) {
+            console.error('Error filtering results:', error);
+        }
+    };
+
     return (
         <div className="App">
             <header className="App-header">
@@ -45,17 +76,30 @@ function App() {
                     </form>
                 </section>
                 {result && (
+                    <section className="filter-section">
+                        <h2>Filter Results</h2>
+                        <form onSubmit={handleFilterSubmit}>
+                            <label htmlFor="filterOption">Filter by: </label>
+                            <select id="filterOption" value={filterOption} onChange={handleFilterOptionChange}>
+                                <option value="author">Author</option>
+                                <option value="title">Title</option>
+                                <option value="keywords">Keywords</option>
+                            </select>
+                            <input
+                                type="text"
+                                placeholder={`Enter ${filterOption}`}
+                                value={filterValue}
+                                onChange={handleFilterValueChange}
+                            />
+                            <button type="submit">Filter</button>
+                        </form>
+                    </section>
+                )}
+                {filteredResult && (
                     <section className="result-section">
-                        <h2>Uploaded Files</h2>
-                        <ul>
-                            {result.file_paths.map((path, index) => (
-                                <li key={index}>{path}</li>
-                            ))}
-                        </ul>
-                        <h2>Entity Clusters</h2>
-                        <p>These clusters represent groups of mentions that refer to the same entity across the uploaded documents.</p>
+                        <h2>Filtered Results</h2>
                         <div className="clusters">
-                            {Object.entries(result.clusters).map(([cluster, mentions], index) => (
+                            {Object.entries(filteredResult).map(([cluster, mentions], index) => (
                                 <div key={index} className="cluster-card">
                                     <h3>Cluster {cluster}</h3>
                                     <ul>
@@ -66,6 +110,23 @@ function App() {
                                 </div>
                             ))}
                         </div>
+                    </section>
+                )}
+                {filteredFiles && (
+                    <section className="file-section">
+                        <h2>Files Containing Filtered Mentions</h2>
+                        <ul>
+                            {Object.entries(filteredFiles).map(([filename, mentions], index) => (
+                                <li key={index}>
+                                    <strong>{filename}</strong>
+                                    <ul>
+                                        {mentions.map((mention, idx) => (
+                                            <li key={idx}>{mention}</li>
+                                        ))}
+                                    </ul>
+                                </li>
+                            ))}
+                        </ul>
                     </section>
                 )}
                 <section className="info-section">
