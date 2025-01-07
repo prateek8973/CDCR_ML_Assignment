@@ -73,20 +73,24 @@ def filter_results():
     clusters = data.get('clusters')
     file_mentions = data.get('file_mentions')
 
-    filtered_clusters = {}
+    filtered_mentions = []
     filtered_files = {}
+    mention_count = 0
 
     for cluster_id, mentions in clusters.items():
-        filtered_mentions = [mention for mention in mentions if filter_value in mention.lower()]
-        if filtered_mentions:
-            filtered_clusters[cluster_id] = filtered_mentions
+        filtered_mentions.extend([mention for mention in mentions if filter_value in mention.lower()])
+        mention_count += len([mention for mention in mentions if filter_value in mention.lower()])
 
     for filename, mentions in file_mentions.items():
-        filtered_mentions = [mention for mention in mentions if filter_value in mention.lower()]
-        if filtered_mentions:
-            filtered_files[filename] = filtered_mentions
+        file_filtered_mentions = [mention for mention in mentions if filter_value in mention.lower()]
+        if file_filtered_mentions:
+            filtered_files[filename] = file_filtered_mentions
 
-    return jsonify({'filtered_clusters': filtered_clusters, 'filtered_files': filtered_files})
+    return jsonify({'filtered_mentions': filtered_mentions, 'filtered_files': filtered_files, 'mention_count': mention_count})
+
+@app.route('/pdf/<filename>')
+def serve_pdf(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')

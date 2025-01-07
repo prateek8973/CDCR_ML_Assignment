@@ -7,8 +7,9 @@ function App() {
     const [result, setResult] = useState(null);
     const [filterOption, setFilterOption] = useState('author');
     const [filterValue, setFilterValue] = useState('');
-    const [filteredResult, setFilteredResult] = useState(null);
+    const [filteredMentions, setFilteredMentions] = useState(null);
     const [filteredFiles, setFilteredFiles] = useState(null);
+    const [mentionCount, setMentionCount] = useState(0);
 
     const handleFileChange = (event) => {
         setFiles(event.target.files);
@@ -54,8 +55,9 @@ function App() {
                 file_mentions: result.file_mentions
             });
             console.log('Filtered Response:', response.data);
-            setFilteredResult(response.data.filtered_clusters);
+            setFilteredMentions(response.data.filtered_mentions);
             setFilteredFiles(response.data.filtered_files);
+            setMentionCount(response.data.mention_count);
         } catch (error) {
             console.error('Error filtering results:', error);
         }
@@ -95,20 +97,16 @@ function App() {
                         </form>
                     </section>
                 )}
-                {filteredResult && (
+                {filteredMentions && (
                     <section className="result-section">
-                        <h2>Filtered Results</h2>
-                        <div className="clusters">
-                            {Object.entries(filteredResult).map(([cluster, mentions], index) => (
-                                <div key={index} className="cluster-card">
-                                    <h3>Cluster {cluster}</h3>
-                                    <ul>
-                                        {mentions.map((mention, idx) => (
-                                            <li key={idx}>{mention}</li>
-                                        ))}
-                                    </ul>
-                                </div>
+                        <h2>Filtered Mentions</h2>
+                        <ul>
+                            {filteredMentions.map((mention, index) => (
+                                <li key={index}>{mention}</li>
                             ))}
+                        </ul>
+                        <div className="summary">
+                            <h3>Total Mentions: {mentionCount}</h3>
                         </div>
                     </section>
                 )}
@@ -118,7 +116,11 @@ function App() {
                         <ul>
                             {Object.entries(filteredFiles).map(([filename, mentions], index) => (
                                 <li key={index}>
-                                    <strong>{filename}</strong>
+                                    <strong>
+                                        <a href={`http://localhost:5000/pdf/${filename}`} target="_blank" rel="noopener noreferrer">
+                                            {filename}
+                                        </a>
+                                    </strong>
                                     <ul>
                                         {mentions.map((mention, idx) => (
                                             <li key={idx}>{mention}</li>
